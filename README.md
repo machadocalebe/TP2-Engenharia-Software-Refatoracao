@@ -1,13 +1,13 @@
-# 🛠️ TP2 - Engenharia de Software: Refatoração (Build Pipeline Kata)
+# TP2 - Engenharia de Software: Refatoração (Build Pipeline Kata)
 
-## 📌 Contexto do Projeto Original
+## Contexto do Projeto Original
 Este projeto é baseado no clássico "Build Pipeline Refactoring Kata" de Emily Bache. O código original simulava a execução de um pipeline de integração contínua, porém apresentava diversos "Code Smells" (maus cheiros no código):
 - Métodos excessivamente longos e com múltiplas responsabilidades (violação do SRP).
 - Nomes de variáveis sem expressividade (`p`, `d`, `c`).
 - Obsessão por primitivos (retorno de *Strings* em vez de *booleans* para indicar sucesso/falha).
 - Listas de parâmetros extensas e acoplamento inadequado.
 
-## 🚀 Melhorias Realizadas e Justificativas Técnicas
+## Melhorias Realizadas e Justificativas Técnicas
 
 ### 1. Reestruturação de Métodos e Expressividade (Exercícios 2 e 3)
 - **Problema:** O método `Pipeline.run` possuía condicionais profundamente aninhadas (Arrow Anti-Pattern) e variáveis booleanas que dificultavam a leitura.
@@ -25,7 +25,7 @@ Este projeto é baseado no clássico "Build Pipeline Refactoring Kata" de Emily 
 - **Solução:** Foi criada a classe especialista `BuildNotifier`.
 - **Justificativa:** Aplicação estrita do **Princípio da Responsabilidade Única (SRP)**. Agora, se a regra de notificação mudar, a classe `Pipeline` não precisa ser alterada.
 
-## ⚙️ Como Executar os Testes
+## Como Executar os Testes
 O projeto utiliza **Maven** e **Java 21**. Para garantir que as refatorações não quebraram o comportamento original, basta executar:
 ```bash
 mvn clean test
