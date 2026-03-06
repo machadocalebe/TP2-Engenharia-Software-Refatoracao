@@ -1,11 +1,31 @@
-Build Pipeline Refactoring Kata
-===============================
+# 🛠️ TP2 - Engenharia de Software: Refatoração (Build Pipeline Kata)
 
-Your task is to add a new feature - a new step in the build pipeline. If the existing tests pass, deploy to a staging environment and run smoke tests. Only if they succeed do you proceed to deploy to production. If there are no smoke tests, fail the pipeline and email the message "Pipeline failed - no smoke tests". In other cases be sure to add suitable log messages and include in the email which tests or deployment failed if any. 
+## 📌 Contexto do Projeto Original
+Este projeto é baseado no clássico "Build Pipeline Refactoring Kata" de Emily Bache. O código original simulava a execução de um pipeline de integração contínua, porém apresentava diversos "Code Smells" (maus cheiros no código):
+- Métodos excessivamente longos e com múltiplas responsabilidades (violação do SRP).
+- Nomes de variáveis sem expressividade (`p`, `d`, `c`).
+- Obsessão por primitivos (retorno de *Strings* em vez de *booleans* para indicar sucesso/falha).
+- Listas de parâmetros extensas e acoplamento inadequado.
 
-Before you make changes to the code you will want to add some tests for the existing functionality. If you prefer to start with the refactoring, go to the 'with_tests' branch.
+## 🚀 Melhorias Realizadas e Justificativas Técnicas
 
+### 1. Reestruturação de Métodos e Expressividade (Exercícios 2 e 3)
+- **Problema:** O método `Pipeline.run` possuía condicionais profundamente aninhadas (Arrow Anti-Pattern) e variáveis booleanas que dificultavam a leitura.
+- **Solução:** Aplicamos o padrão **Guard Clauses (Retorno Antecipado)** para "achatar" a lógica. O método foi quebrado em métodos menores e focados, como `executeTests` e `executeDeploy`.
+- **Justificativa:** A extração de métodos transformou o `run` em um "índice" de alto nível, melhorando drasticamente a legibilidade e facilitando a manutenção futura.
 
-## Acknowledgements
+### 2. Melhoria de Assinaturas e Encapsulamento (Exercício 4)
+- **Problema 1 (Primitive Obsession):** Os métodos `runTests()` e `deploy()` da classe `Project` retornavam Strings (`"success"` ou `"failure"`), o que é propenso a erros de digitação e não garante segurança de tipo (Type Safety).
+- **Solução 1:** As assinaturas foram alteradas para retornar `boolean`.
+- **Problema 2 (Long Parameter List):** O construtor de `Pipeline` recebia várias dependências soltas (`Config`, `Emailer`, `Logger`).
+- **Solução 2:** Foi introduzido o padrão **Parameter Object**, criando a classe `BuildContext` para agrupar o ambiente de execução.
 
-This exercise was originally named "Untangled Conditionals Kata" and was designed by [Tom Oram](https://github.com/tomphp). I wanted to use it as a test design kata as well as a refactoring kata, so I removed the tests from the main branch and put them on the 'with_tests' branch instead.
+### 3. Reorganização de Classes e Alta Coesão (Exercício 5)
+- **Problema:** A classe `Pipeline` orquestrava os testes/deploy e *também* decidia o conteúdo e envio de e-mails.
+- **Solução:** Foi criada a classe especialista `BuildNotifier`.
+- **Justificativa:** Aplicação estrita do **Princípio da Responsabilidade Única (SRP)**. Agora, se a regra de notificação mudar, a classe `Pipeline` não precisa ser alterada.
+
+## ⚙️ Como Executar os Testes
+O projeto utiliza **Maven** e **Java 21**. Para garantir que as refatorações não quebraram o comportamento original, basta executar:
+```bash
+mvn clean test
