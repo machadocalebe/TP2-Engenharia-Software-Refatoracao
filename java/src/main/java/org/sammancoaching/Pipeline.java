@@ -5,16 +5,22 @@ import org.sammancoaching.dependencies.Project;
 public class Pipeline {
 
     private final BuildContext context;
+    private final BuildNotifier notifier;
 
     public Pipeline(BuildContext context) {
         this.context = context;
+        this.notifier = new BuildNotifier(context);
     }
 
     public void run(Project project) {
+        // Fase 1: Testes
         boolean testsPassed = executeTests(project);
+
+        // Fase 2: Deploy
         boolean deploySuccessful = testsPassed && executeDeploy(project);
 
-        sendEmailSummary(testsPassed, deploySuccessful);
+        // Fase 3: Notificação
+        notifier.sendSummary(testsPassed, deploySuccessful);
     }
 
     private boolean executeTests(Project project) {
@@ -33,7 +39,6 @@ public class Pipeline {
     }
 
     private boolean executeDeploy(Project project) {
-
         if (project.deploy()) {
             context.getLog().info("Deployment successful");
             return true;
@@ -41,21 +46,5 @@ public class Pipeline {
 
         context.getLog().error("Deployment failed");
         return false;
-    }
-
-    private void sendEmailSummary(boolean testsPassed, boolean deploySuccessful) {
-        if (!context.getConfig().sendEmailSummary()) {
-            context.getLog().info("Email disabled");
-            return;
-        }
-
-        context.getLog().info("Sending email");
-        if (!testsPassed) {
-            context.getEmailer().send("Tests failed");
-        } else if (!deploySuccessful) {
-            context.getEmailer().send("Deployment failed");
-        } else {
-            context.getEmailer().send("Deployment completed successfully");
-        }
     }
 }
