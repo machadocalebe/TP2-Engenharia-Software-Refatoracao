@@ -24,21 +24,22 @@ public class Project {
         return testStatus != NO_TESTS;
     }
 
-    public String runTests() {
-        return testStatus == PASSING_TESTS ? "success" : "failure";
+    public boolean runTests() {
+        return testStatus == PASSING_TESTS;
     }
 
-    public String deploy() {
+    public boolean deploy() {
         return deploy(DeploymentEnvironment.PRODUCTION);
     }
-    public String deploy(DeploymentEnvironment environment) {
+
+    public boolean deploy(DeploymentEnvironment environment) {
         switch (environment) {
             case STAGING:
-                return deploysSuccessfullyToStaging ? "success" : "failure";
+                return deploysSuccessfullyToStaging;
             case PRODUCTION:
-                return deploysSuccessfully ? "success" : "failure";
+                return deploysSuccessfully;
             default:
-                return "failure";
+                return false;
         }
     }
 

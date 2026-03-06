@@ -22,7 +22,7 @@ class PipelineTest {
 
     @BeforeEach
     void setUp() {
-        pipeline = new Pipeline(config, emailer, log);
+        pipeline = new Pipeline(new BuildContext(config, emailer, log));
     }
 
     @Test

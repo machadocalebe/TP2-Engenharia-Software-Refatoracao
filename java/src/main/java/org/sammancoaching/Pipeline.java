@@ -1,19 +1,13 @@
 package org.sammancoaching;
 
-import org.sammancoaching.dependencies.Config;
-import org.sammancoaching.dependencies.Emailer;
-import org.sammancoaching.dependencies.Logger;
 import org.sammancoaching.dependencies.Project;
 
 public class Pipeline {
-    private final Config config;
-    private final Emailer emailer;
-    private final Logger log;
 
-    public Pipeline(Config config, Emailer emailer, Logger log) {
-        this.config = config;
-        this.emailer = emailer;
-        this.log = log;
+    private final BuildContext context;
+
+    public Pipeline(BuildContext context) {
+        this.context = context;
     }
 
     public void run(Project project) {
@@ -25,42 +19,43 @@ public class Pipeline {
 
     private boolean executeTests(Project project) {
         if (!project.hasTests()) {
-            log.info("No tests");
+            context.getLog().info("No tests");
             return true;
         }
 
-        if ("success".equals(project.runTests())) {
-            log.info("Tests passed");
+        if (project.runTests()) {
+            context.getLog().info("Tests passed");
             return true;
         }
 
-        log.error("Tests failed");
+        context.getLog().error("Tests failed");
         return false;
     }
 
     private boolean executeDeploy(Project project) {
-        if ("success".equals(project.deploy())) {
-            log.info("Deployment successful");
+
+        if (project.deploy()) {
+            context.getLog().info("Deployment successful");
             return true;
         }
 
-        log.error("Deployment failed");
+        context.getLog().error("Deployment failed");
         return false;
     }
 
     private void sendEmailSummary(boolean testsPassed, boolean deploySuccessful) {
-        if (!config.sendEmailSummary()) {
-            log.info("Email disabled");
+        if (!context.getConfig().sendEmailSummary()) {
+            context.getLog().info("Email disabled");
             return;
         }
 
-        log.info("Sending email");
+        context.getLog().info("Sending email");
         if (!testsPassed) {
-            emailer.send("Tests failed");
+            context.getEmailer().send("Tests failed");
         } else if (!deploySuccessful) {
-            emailer.send("Deployment failed");
+            context.getEmailer().send("Deployment failed");
         } else {
-            emailer.send("Deployment completed successfully");
+            context.getEmailer().send("Deployment completed successfully");
         }
     }
 }

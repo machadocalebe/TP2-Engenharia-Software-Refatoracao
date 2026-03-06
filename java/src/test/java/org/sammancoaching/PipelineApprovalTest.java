@@ -30,7 +30,7 @@ public class PipelineApprovalTest {
         var config = new DefaultConfig(sendSummary);
         var emailer = new CapturingEmailer(spy);
         var log = new CapturingLogger(spy);
-        var pipeline = new Pipeline(config, emailer, log);
+        var pipeline = new Pipeline(new BuildContext(config, emailer, log));
 
         var project = Project.builder()
                 .setTestStatus(testStatus)
